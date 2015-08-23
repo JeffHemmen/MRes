@@ -7,7 +7,11 @@ init = function() {
   source("fitting.r")
   print("Loading external data...")
   loadData()
-  .INIT = T
+  .INIT <<- T
+  
+  maxSOE <<- 3000
+  #any one feature can only shift the LR by a factor of maxSOE either way
+  
   return(T)
 }
 
@@ -38,13 +42,26 @@ runAnalysis = function(sp, acc) {
   endLR = 1
   
   for(i in 1:numFeatures) {
-    print(paste("Investigating feature", featureNames[i]))
+    print(paste("[", count, "/", maxcount, "] Investigating feature", featureNames[i]))
     thisFeature = list()
     thisFeature$name = paste(i,featureNames[[i]])
     
     PFeat_bg    = runFeature(i, sp, bg_acc.names)
     PFeat_null  = runFeature(i, sp, bg_null.names)
-    featLR = PFeat_bg/PFeat_null
+    if(is.nan(PFeat_bg) || is.nan(PFeat_null)) {
+      featLR = NaN
+    } else if(PFeat_null==0 && PFeat_bg==0) {
+      featLR = NaN
+    } else if(PFeat_bg==0) {
+      featLR = 1/maxSOE
+    } else if(PFeat_null==0) {
+      featLR=maxSOE
+    } else {
+      featLR = PFeat_bg/PFeat_null
+      if(featLR >   maxSOE) {featLR = maxSOE}
+      if(featLR < 1/maxSOE) {featLR = 1/maxSOE}
+    }
+
     
     thisFeature$p_acc   = PFeat_bg
     thisFeature$p_null  = PFeat_null
@@ -70,7 +87,7 @@ interactive = function() {
   print("All accents:")
   print(unique(data.all[,1]))
   acc <<- readline(prompt="Select one accent: ")
-  
+  count<<-1; maxcount<<-1
   analyses <<- list()
   analyses[[1]] <<- runAnalysis(sp, acc)
 }
@@ -81,10 +98,13 @@ complete = function() {
   numAnalyses = 0
   analyses <<- list()
   
+  count<<-1; maxcount<<-length(unique(data.all$SPEAKER))
+  
   for(sp in unique(data.all$SPEAKER)) {
     for(acc in unique(data.all$ACCENT)) {
-      print(paste("Analsying speaker ", sp, " for accent ", acc))
+      print(paste("[", count, "/", maxcount, "] Analsying speaker ", sp, " for accent ", acc))
       flush.console()
+      count = count + 1
       numAnalyses = numAnalyses + 1
       analyses[[numAnalyses]] <<- runAnalysis(sp, acc)
       flush.console()
@@ -95,9 +115,9 @@ complete = function() {
 
 sampleTest=function() {
   init()
-
-  sp = "brm_f_04"
-  acc ="brm"
+  count<<-1; maxcount<<-1
+  sp = "brm_f_01"
+  acc ="crn"
   
   analyses<<-list()
   analyses[[1]] <<- runAnalysis(sp, acc)

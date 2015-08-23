@@ -5,6 +5,7 @@ vowelDist = function(a, b){
 		r = r + p*p;
 	}
 	r = sqrt(r);
+	r = log(r)
 	return(r[1,1]);
 }
 
@@ -15,6 +16,7 @@ diphthongDist = function(a) {
     r = r + p*p;
   }
   r = sqrt(r);
+  r = log(r)
   return(r[1,1]);
 }
 
@@ -52,16 +54,16 @@ averageMFCCs = function(l) {
 	return(res)
 }
 
-averageOut = function(all) {
-	res = data.frame()
-	for(sp in unique(all[, 3])) {
-		for(wls in unique(all[, 9])) {
-			tmp = averageMFCCs(all[which(all$SPEAKER==sp & all$WELLS==wls),])
-			res = rbind(res, tmp)
-		}	
-	}
-	return(res)
-}
+#averageOut = function(all) {
+#	res = data.frame()
+#	for(sp in unique(all[, 3])) {
+#		for(wls in unique(all[, 9])) {
+#			tmp = averageMFCCs(all[which(all$SPEAKER==sp & all$WELLS==wls),])
+#			res = rbind(res, tmp)
+#		}	
+#	}
+#	return(res)
+#}
 
 loadData = function() {
 	if(!exists("data.all")) {
@@ -72,12 +74,12 @@ loadData = function() {
 		print("done.")
 		flush.console()
 	}
-	if(!exists("data.avg")) {
-		print("Averaging tokens for each speaker...")
-		flush.console()
-		data.avg <<- averageOut(data.all)
-		print("done.")
-		flush.console()
-	}
+	#if(!exists("data.avg")) {
+	#	print("Averaging tokens for each speaker...")
+	#	flush.console()
+	#	data.avg <<- averageOut(data.all)
+	#	print("done.")
+	#	flush.console()
+	#}
 }
 	

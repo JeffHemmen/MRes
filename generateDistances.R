@@ -17,27 +17,29 @@ init = function() {
 
 generateDistances = function() {
   init()
-	loadData()
 	distances <<- data.frame()
+	count = 1; maxcount = length(unique(data.all[,3]))
 	for(sp in unique(data.all[,3])) {
 	#for each speaker
-		print(paste("Now processing: ", sp))
+		print(paste("[", count, "/", maxcount, "] Now processing: ", sp))
+	  count = count+1
 		print("    Isolating data from this speaker...")
 		flush.console()
-		data.sp <<- data.avg[which(data.avg$SPEAKER==sp),]
+		data.sp <<- data.all[which(data.all$SPEAKER==sp),]
 		print("        done.")
 		flush.console()
-		newLine <<- data.frame(ACCENT=data.sp[1,1], GENDER=data.sp[1,2], SPEAKER=sp, SPEAKER.NO=data.sp[1,4])
+		newLine.sp <<- data.frame(ACCENT=data.sp[1,1], GENDER=data.sp[1,2], SPEAKER=sp, SPEAKER.NO=data.sp[1,4])
 		for(i in 1:numFeatures) {
 		#for each feature
 			print(paste("    Current feature: ", featureNames[i]))
-			featVal = getFeatures(data.sp, featureFunctions[[i]])
-			newFeat = data.frame(featVal)
-			colnames(newFeat) = featureNames[i]
-			newLine <<- cbind(newLine, newFeat)
+			newField = data.frame(FEATURE.NAME=featureNames[[i]])
+			newLine.feat <<- cbind(newLine.sp, newField)
+			featVals = getFeatures(data.sp, featureFunctions[[i]])
+			for(f in featVals) {
+			  newEntry = cbind(newLine.feat, data.frame(FEATURE.VALUE=f))
+			  distances <<- rbind(distances, newEntry)
+			}
 		}
-		
-		distances <<- rbind(distances, newLine)
 	}
 	print(" D O N E .")
 	flush.console()
