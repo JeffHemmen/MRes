@@ -7,11 +7,7 @@ init = function() {
   source("fitting.r")
   print("Loading external data...")
   loadData()
-  .INIT <<- T
-  
-  maxSOE <<- 3000
-  #any one feature can only shift the LR by a factor of maxSOE either way
-  
+  .INIT = T
   return(T)
 }
 
@@ -42,28 +38,13 @@ runAnalysis = function(sp, acc) {
   endLR = 1
   
   for(i in 1:numFeatures) {
+    print(paste("Investigating feature", featureNames[i]))
     thisFeature = list()
     thisFeature$name = paste(i,featureNames[[i]])
     
-
-    
     PFeat_bg    = runFeature(i, sp, bg_acc.names)
     PFeat_null  = runFeature(i, sp, bg_null.names)
-    print(cat("PFeat_null", PFeat_null, "PFeat_bg", PFeat_bg))
-    if(is.nan(PFeat_bg) || is.nan(PFeat_null) || !is.finite(PFeat_null) || !is.finite(PFeat_bg)) {
-      featLR = NaN
-    } else if(PFeat_null==0 && PFeat_bg==0) {
-      featLR = NaN
-    } else if(PFeat_bg==0) {
-      featLR = 1/maxSOE
-    } else if(PFeat_null==0) {
-      featLR=maxSOE
-    } else {
-      featLR = PFeat_bg/PFeat_null
-      if(featLR >   maxSOE) {featLR = maxSOE}
-      if(featLR < 1/maxSOE) {featLR = 1/maxSOE}
-    }
-
+    featLR = PFeat_bg/PFeat_null
     
     thisFeature$p_acc   = PFeat_bg
     thisFeature$p_null  = PFeat_null
@@ -89,7 +70,7 @@ interactive = function() {
   print("All accents:")
   print(unique(data.all[,1]))
   acc <<- readline(prompt="Select one accent: ")
-
+  
   analyses <<- list()
   analyses[[1]] <<- runAnalysis(sp, acc)
 }
@@ -100,10 +81,10 @@ complete = function() {
   numAnalyses = 0
   analyses <<- list()
   
-
-  
   for(sp in unique(data.all$SPEAKER)) {
     for(acc in unique(data.all$ACCENT)) {
+      print(paste("Analsying speaker ", sp, " for accent ", acc))
+      flush.console()
       numAnalyses = numAnalyses + 1
       analyses[[numAnalyses]] <<- runAnalysis(sp, acc)
       flush.console()
@@ -114,8 +95,9 @@ complete = function() {
 
 sampleTest=function() {
   init()
-  sp = "brm_f_01"
-  acc ="crn"
+
+  sp = "brm_f_04"
+  acc ="brm"
   
   analyses<<-list()
   analyses[[1]] <<- runAnalysis(sp, acc)
