@@ -95,17 +95,17 @@ main = function() {
 
 ###############taken out of code
 #dichotomise speaker's data
-#sp1.all     = data.all[which(data.all$SPEAKER==sp),]
-#sp1.gender  = sp1.all[1, 2]
-#sp1.avg     = averageOut(sp1.all)
+sp1.all     = data.all[which(data.all$SPEAKER==sp),]
+sp1.gender  = sp1.all[1, 2]
+sp1.avg     = averageOut(sp1.all)
 
-#bg.all	= data.all[which(data.all$SPEAKER!=sp & data.all$GENDER==sp1.gender),]
+bg.all	= data.all[which(data.all$SPEAKER!=sp & data.all$GENDER==sp1.gender),]
 
 #All other speakers of the same accent and same gender
-#bg_acc.all = bg.all[which(bg.all$ACCENT==acc),]
-#bg_acc.avg = averageOut(bg_acc.all)
-#bg_acc.names
+bg_acc.all = bg.all[which(bg.all$ACCENT==acc),]
+bg_acc.avg = averageOut(bg_acc.all)
+bg_acc.names
 
 #All speakers of all other accents, but the same gender
-#bg_null.all = bg.all[which(bg.all$ACCENT!=acc),]
-#bg_null.avg = averageOut(bg_null.all)
+bg_null.all = bg.all[which(bg.all$ACCENT!=acc),]
+bg_null.avg = averageOut(bg_null.all)

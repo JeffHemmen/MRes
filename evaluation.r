@@ -6,7 +6,6 @@ Cllr = function(analyses) {
   FALSE_NEGATIVES = 0;
   FALSE_POSITIVES = 0;
   for(i in 1:length(analyses)) {
-    if(!is.finite(analyses[[i]]$LR)) {next()}
     if(substr(analyses[[i]]$speaker, 1, 3)==analyses[[i]]$accent) {
       #LR SHOULD be >1
       tmp = log2(1+(1/analyses[[i]]$LR))
